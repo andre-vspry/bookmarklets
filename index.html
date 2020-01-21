@@ -199,4 +199,75 @@ var password = shuffle(doPassword());
 executeCopy(password);
 })()
 ">Stronger Password</a></p>
+
+<p><a href="javascript:(function(){
+'use strict';
+
+var hexa = '0123456789abcdef';
+
+var cryptoObject = null;
+
+function randomInt(n) {
+  var x = randomIntMathRandom(n);
+  x = (x + randomIntBrowserCrypto(n)) % n;
+  return x;
+}
+
+function randomIntMathRandom(n) {
+  var x = Math.floor(Math.random() * n);
+  if (x < 0 || x >= n)
+    throw 'Arithmetic exception';
+  return x;
+}
+
+function randomIntBrowserCrypto(n) {
+  if (cryptoObject == null) return 0;
+  var x = new Uint32Array(1);
+  do {
+    cryptoObject.getRandomValues(x);
+  } while (x[0] - x[0] % n > 4294967296 - n);
+  return x[0] % n;
+}
+
+function initCrypto() {
+  if ('crypto' in window)
+    cryptoObject = crypto;
+  else if ('msCrypto' in window)
+    cryptoObject = msCrypto;
+  else return;
+}
+
+function executeCopy(text) {
+  var input = document.createElement('textarea');
+  document.body.appendChild(input);
+  input.value = text;
+  input.focus();
+  input.select();
+  document.execCommand('Copy');
+  input.remove();
+};
+
+function dec2hex(d) {
+  var h = hexa.substr(d & 15, 1);
+  while (d > 15) {
+    d >>= 4;
+    h = hexa.substr(d & 15, 1) + h;
+  }
+  return h;
+}
+
+function sub(len) {
+  var s = '';
+  for (var i = 0; i < len; i++) {
+    s += dec2hex(Math.random() * 16);
+  }
+  return s;
+}
+
+initCrypto();
+var guid = sub(8) + '-' + sub(4) + '-' + sub(4) + '-' + sub(4) + '-' + sub(12);
+executeCopy(guid);
+})()
+">GUID</a></p>
+
 </body>
